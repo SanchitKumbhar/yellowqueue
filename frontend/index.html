@@ -1,0 +1,1023 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PrintFlow – Print Shop Management System</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    /* Basic Auth Styles to ensure the new screens look good */
+    .auth-wrapper {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      background-color: var(--bg-dark, #0F172A);
+      color: white;
+      font-family: sans-serif;
+    }
+    .auth-card {
+      background: #1E293B;
+      padding: 40px;
+      border-radius: 8px;
+      width: 100%;
+      max-width: 400px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+    }
+    .auth-card h2 { margin-top: 0; margin-bottom: 8px; }
+    .auth-card p { color: #94A3B8; margin-bottom: 24px; font-size: 14px; }
+    .auth-card .input-group { margin-bottom: 16px; }
+    .auth-card label { display: block; margin-bottom: 6px; font-size: 13px; color: #CBD5E1; }
+    .auth-card input { width: 100%; padding: 10px; border-radius: 4px; border: 1px solid #334155; background: #0F172A; color: white; box-sizing: border-box; }
+    .auth-card button { width: 100%; padding: 12px; background: #3B82F6; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; margin-top: 10px; }
+    .auth-card button:hover { background: #2563EB; }
+    .auth-switch { text-align: center; margin-top: 20px; font-size: 13px; }
+    .auth-switch a { color: #3B82F6; text-decoration: none; }
+  </style>
+</head>
+<body>
+
+  <div id="auth-container" class="auth-wrapper">
+    <div id="login-section" class="auth-card">
+  <h2>Welcome Back</h2>
+  <form id="login-form">
+    <div class="input-group">
+      <label>Phone Number</label>
+      <input type="text" id="login-phone" required>
+    </div>
+    <div class="input-group">
+      <label>Password</label>
+      <input type="password" id="login-password" required>
+    </div>
+    <button type="submit">Sign In</button>
+  </form>
+  <p class="auth-switch">Don't have an account? <a href="#" id="toggle-to-signup">Create one</a></p>
+</div>
+
+<div id="signup-section" class="auth-card" style="display: none;">
+  <h2>Create Account</h2>
+  <form id="signup-form">
+    <div class="input-group">
+      <label>Store Name</label>
+      <input type="text" id="signup-name" required>
+    </div>
+    <div class="input-group">
+      <label>Phone Number</label>
+      <input type="text" id="signup-phone" required>
+    </div>
+    <div class="input-group">
+      <label>Password</label>
+      <input type="password" id="signup-password" required>
+    </div>
+    <button type="submit">Sign Up</button>
+  </form>
+  <p class="auth-switch">Already have an account? <a href="#" id="toggle-to-login">Sign in</a></p>
+</div>
+  </div>
+
+  <div class="app-container" id="main-app-container" style="display: none;">
+    
+    <aside class="sidebar" id="sidebar">
+      <div class="brand-container">
+        <a href="#" class="brand-logo">
+          <div class="brand-logo-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+            </svg>
+          </div>
+          <span class="brand-name">Print<span>Flow</span></span>
+        </a>
+        <button class="sidebar-toggle-btn" id="sidebar-toggle" title="Toggle Sidebar">
+          <i data-lucide="menu"></i>
+        </button>
+      </div>
+
+      <ul class="sidebar-nav">
+        <li class="nav-item active" data-screen="dashboard">
+          <a href="#" class="nav-link">
+            <i data-lucide="layout-dashboard"></i>
+            <span>Dashboard</span>
+          </a>
+        </li>
+        <li class="nav-item" data-screen="print-queue">
+          <a href="#" class="nav-link">
+            <i data-lucide="printer"></i>
+            <span>Print Queue</span>
+          </a>
+        </li>
+        <li class="nav-item" data-screen="files">
+          <a href="#" class="nav-link">
+            <i data-lucide="folder-open"></i>
+            <span>Files</span>
+          </a>
+        </li>
+        <li class="nav-item" data-screen="cost-calculator">
+          <a href="#" class="nav-link">
+            <i data-lucide="calculator"></i>
+            <span>Cost Calculator</span>
+          </a>
+        </li>
+        <li class="nav-item" data-screen="settings">
+          <a href="#" class="nav-link">
+            <i data-lucide="settings"></i>
+            <span>Settings</span>
+          </a>
+        </li>
+        <li class="nav-item" data-screen="help">
+          <a href="#" class="nav-link">
+            <i data-lucide="help-circle"></i>
+            <span>Help</span>
+          </a>
+        </li>
+      </ul>
+
+      <div class="sidebar-footer">
+        <div class="sidebar-profile">
+          <div class="profile-avatar" id="sidebar-profile-avatar">--</div>
+          <div class="profile-info">
+            <span class="profile-name" id="sidebar-profile-name">Store User</span>
+            <span class="profile-role" id="sidebar-profile-role">Operator</span>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <main class="main-content">
+      
+      <header class="top-header">
+        <div class="header-left">
+          <div class="search-wrapper">
+            <i data-lucide="search" class="search-icon"></i>
+            <input type="text" placeholder="Search orders or files..." class="search-input" id="global-search">
+          </div>
+        </div>
+
+        <div class="header-right">
+          <div class="connection-badge" title="Local connection status">
+            <span class="connection-dot"></span>
+            <span>Online</span>
+          </div>
+          
+          <div class="incoming-jobs-indicator" id="incoming-jobs-pill" title="New jobs received today">
+            <i data-lucide="bell-ring"></i>
+            <span id="incoming-jobs-count">3 New Jobs</span>
+          </div>
+
+          <div class="date-time-display" id="date-time-clock">
+            12:43 PM - Jun 16, 2026
+          </div>
+
+          <button class="icon-action-btn" id="header-notif-btn">
+            <i data-lucide="bell"></i>
+            <span class="badge-dot"></span>
+          </button>
+        </div>
+      </header>
+
+      <div class="screen-container">
+        
+        <div class="screen-view active" id="screen-dashboard">
+          <div class="screen-header">
+            <div class="screen-title-area">
+              <h1 class="screen-title">Dashboard</h1>
+              <p class="screen-subtitle">Centralized Print Queue Management Overview</p>
+            </div>
+            <button class="btn-primary" id="dash-new-order-btn">
+              <i data-lucide="plus"></i>
+              <span>New Order</span>
+            </button>
+          </div>
+
+          <div class="dashboard-grid">
+            <div class="stat-card accent">
+              <div class="stat-header">
+                <span class="stat-title">Total Orders Today</span>
+                <div class="stat-icon"><i data-lucide="shopping-bag"></i></div>
+              </div>
+              <div class="stat-body">
+                <div class="stat-value" id="stat-total-orders">42</div>
+                <div class="stat-meta"><span class="trend-up"><i data-lucide="trending-up"></i> +12%</span> vs yesterday</div>
+              </div>
+            </div>
+
+            <div class="stat-card warning">
+              <div class="stat-header">
+                <span class="stat-title">Pending Jobs</span>
+                <div class="stat-icon"><i data-lucide="clock"></i></div>
+              </div>
+              <div class="stat-body">
+                <div class="stat-value" id="stat-pending-jobs">8</div>
+                <div class="stat-meta">Awaiting processing</div>
+              </div>
+            </div>
+
+            <div class="stat-card accent">
+              <div class="stat-header">
+                <span class="stat-title">Printing Jobs</span>
+                <div class="stat-icon"><i data-lucide="activity"></i></div>
+              </div>
+              <div class="stat-body">
+                <div class="stat-value" id="stat-printing-jobs">3</div>
+                <div class="stat-meta">Active on machines</div>
+              </div>
+            </div>
+
+            <div class="stat-card success">
+              <div class="stat-header">
+                <span class="stat-title">Completed Jobs</span>
+                <div class="stat-icon"><i data-lucide="check-circle2"></i></div>
+              </div>
+              <div class="stat-body">
+                <div class="stat-value" id="stat-completed-jobs">31</div>
+                <div class="stat-meta">Ready for pickup</div>
+              </div>
+            </div>
+
+            <div class="stat-card delivered">
+              <div class="stat-header">
+                <span class="stat-title">Revenue Today</span>
+                <div class="stat-icon"><i data-lucide="dollar-sign"></i></div>
+              </div>
+              <div class="stat-body">
+                <div class="stat-value" id="stat-revenue-today">$642.50</div>
+                <div class="stat-meta"><span class="trend-up"><i data-lucide="trending-up"></i> +24%</span> vs average</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="quick-actions-bar">
+            <span class="quick-action-label">Quick Actions</span>
+            <button class="btn-action" data-action="new-order">
+              <i data-lucide="plus-circle"></i>
+              <span>New Order</span>
+            </button>
+            <button class="btn-action" data-action="calc">
+              <i data-lucide="calculator"></i>
+              <span>Cost Calculator</span>
+            </button>
+            <button class="btn-action" data-action="queue">
+              <i data-lucide="list-ordered"></i>
+              <span>Open Queue</span>
+            </button>
+          </div>
+
+          <div class="dashboard-panels">
+            <div class="panel-card">
+              <div class="panel-header">
+                <h3 class="panel-title"><i data-lucide="inbox"></i> Incoming Jobs</h3>
+                <span class="status-badge pending" style="padding: 2px 8px; font-size: 10px;">Live Feed</span>
+              </div>
+              <div class="panel-body" id="incoming-jobs-list">
+                <div class="job-widget-list">
+                  </div>
+              </div>
+            </div>
+
+            <div class="panel-card">
+              <div class="panel-header">
+                <h3 class="panel-title"><i data-lucide="line-chart"></i> Recent Activity</h3>
+              </div>
+              <div class="panel-body">
+                <div class="activity-feed" id="dashboard-activity-feed">
+                  </div>
+              </div>
+            </div>
+
+            <div class="panel-card">
+              <div class="panel-header">
+                <h3 class="panel-title"><i data-lucide="cpu"></i> System & Devices</h3>
+              </div>
+              <div class="panel-body">
+                <div class="system-status-list">
+                  <div class="status-row">
+                    <div class="status-label-row">
+                      <span class="status-label">Printer Queue Load</span>
+                      <span class="status-val" id="sys-queue-load">74%</span>
+                    </div>
+                    <div class="status-bar-bg">
+                      <div class="status-bar-fill warning" style="width: 74%;"></div>
+                    </div>
+                  </div>
+
+                  <div class="status-row">
+                    <div class="status-label-row">
+                      <span class="status-label">Local Server Storage</span>
+                      <span class="status-val">340 GB / 512 GB</span>
+                    </div>
+                    <div class="status-bar-bg">
+                      <div class="status-bar-fill normal" style="width: 66%;"></div>
+                    </div>
+                  </div>
+
+                  <div class="details-section-title" style="margin-top: 10px; margin-bottom: 2px; border-bottom: none; padding-bottom: 0;">Real-Time Printers</div>
+                  <div id="dashboard-printers-list" style="display: flex; flex-direction: column; gap: 8px;">
+                    </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="screen-view" id="screen-print-queue">
+          <div class="screen-header">
+            <div class="screen-title-area">
+              <h1 class="screen-title">Print Queue</h1>
+              <p class="screen-subtitle">Monitor and dispatch print jobs from all sources</p>
+            </div>
+            <div style="display: flex; gap: 10px;">
+              <button class="btn-secondary" id="queue-refresh-btn">
+                <i data-lucide="refresh-cw"></i>
+                <span>Refresh</span>
+              </button>
+              <button class="btn-primary" id="queue-new-order-btn">
+                <i data-lucide="plus"></i>
+                <span>New Order</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="table-toolbar">
+            <div class="toolbar-left">
+              <div class="search-wrapper" style="max-width: 300px;">
+                <i data-lucide="search" class="search-icon"></i>
+                <input type="text" placeholder="Filter current queue..." class="search-input" id="queue-search-input">
+              </div>
+
+              <select class="select-input" id="queue-filter-status">
+                <option value="all">All Statuses</option>
+                <option value="pending">Pending</option>
+                <option value="printing">Printing</option>
+                <option value="completed">Completed</option>
+                <option value="delivered">Delivered</option>
+              </select>
+
+              <select class="select-input" id="queue-filter-source">
+                <option value="all">All Sources</option>
+                <option value="whatsapp">WhatsApp</option>
+                <option value="email">Email</option>
+                <option value="manual">Manual Entry</option>
+              </select>
+            </div>
+
+            <div class="toolbar-right">
+              <div class="bulk-actions-wrapper" id="queue-bulk-actions">
+                <span id="bulk-selected-count">0 items selected</span>
+                <button class="btn-icon-sm" style="color: var(--accent);" title="Bulk Print"><i data-lucide="printer"></i></button>
+                <button class="btn-icon-sm" style="color: var(--success);" title="Bulk Complete"><i data-lucide="check-circle2"></i></button>
+                <button class="btn-icon-sm" style="color: var(--danger);" title="Bulk Cancel"><i data-lucide="trash-2"></i></button>
+              </div>
+
+              <button class="btn-secondary" id="queue-sort-btn" style="height: 38px; padding: 0 12px;" title="Sort Direction">
+                <i data-lucide="arrow-down-up"></i>
+                <span style="font-size: 13px; font-weight: 500;">Sort By Time</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="data-table-container">
+            <table class="data-table" id="queue-table">
+              <thead>
+                <tr>
+                  <th style="width: 40px;">
+                    <label class="checkbox-container">
+                      <input type="checkbox" id="queue-select-all">
+                      <span class="checkmark"></span>
+                    </label>
+                  </th>
+                  <th>Job ID</th>
+                  <th>Customer Phone</th>
+                  <th>File Name</th>
+                  <th>File Type</th>
+                  <th>Total Pages</th>
+                  <th>Upload Time</th>
+                  <th>Status</th>
+                  <th>Estimated Cost</th>
+                  <th>Priority</th>
+                  <th style="width: 140px; text-align: center;">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="queue-table-body">
+                </tbody>
+            </table>
+          </div>
+
+          <div class="pagination-wrapper">
+            <span id="queue-pagination-info">Showing 1-10 of 28 jobs</span>
+            <div class="pagination-pages">
+              <button class="page-btn" disabled><i data-lucide="chevron-left"></i></button>
+              <button class="page-btn active">1</button>
+              <button class="page-btn">2</button>
+              <button class="page-btn">3</button>
+              <button class="page-btn"><i data-lucide="chevron-right"></i></button>
+            </div>
+          </div>
+        </div>
+
+        <div class="screen-view" id="screen-files">
+          <div class="screen-header">
+            <div class="screen-title-area">
+              <h1 class="screen-title">File Preview</h1>
+              <p class="screen-subtitle">Browse and preview customer document submissions</p>
+            </div>
+          </div>
+
+          <div class="preview-layout">
+            <div class="preview-main">
+              <div class="preview-toolbar">
+                <span class="preview-filename" id="preview-active-filename">mockup_document.pdf</span>
+                <div class="toolbar-controls" style="display: flex; align-items: center; gap: 8px;">
+                  <button class="icon-action-btn" id="preview-prev-page" title="Previous Page"><i data-lucide="chevron-left"></i></button>
+                  <span id="preview-page-indicator" style="font-size: 12px; font-weight: 600; color: var(--text-secondary); min-width: 70px; text-align: center; margin: 0 4px;">Page 1 of 1</span>
+                  <button class="icon-action-btn" id="preview-next-page" title="Next Page" style="margin-right: 12px;"><i data-lucide="chevron-right"></i></button>
+                  
+                  <button class="icon-action-btn" id="preview-zoom-in" title="Zoom In"><i data-lucide="zoom-in"></i></button>
+                  <button class="icon-action-btn" id="preview-zoom-out" title="Zoom Out"><i data-lucide="zoom-out"></i></button>
+                  <button class="icon-action-btn" id="preview-rotate" title="Rotate Document"><i data-lucide="rotate-cw"></i></button>
+                  <button class="icon-action-btn" id="preview-download" title="Save File Locally"><i data-lucide="download"></i></button>
+                  <button class="icon-action-btn" id="preview-external" title="Open in External App"><i data-lucide="external-link"></i></button>
+                </div>
+              </div>
+
+              <div class="preview-viewport" id="preview-viewport">
+                <div class="viewport-content" id="preview-document-card">
+                  </div>
+
+                <div class="preview-loading" id="preview-loading-overlay">
+                  <div class="spinner"></div>
+                  <span style="font-size: 13px; color: var(--text-secondary);">Rendering preview...</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="screen-view" id="screen-cost-calculator">
+          <div class="screen-header">
+            <div class="screen-title-area">
+              <h1 class="screen-title">Cost Calculator</h1>
+              <p class="screen-subtitle">Calculate customer pricing live based on custom print specs</p>
+            </div>
+          </div>
+
+          <div class="calculator-container">
+            <div class="calculator-card">
+              <form class="calc-form" id="cost-calc-form" onsubmit="return false;">
+                <div class="option-grid-2col">
+                  <div class="calc-form-group">
+                    <label class="calc-label" for="calc-pages">Total Pages</label>
+                    <input type="number" id="calc-pages" class="input-text" value="10" min="1">
+                  </div>
+                  <div class="calc-form-group">
+                    <label class="calc-label" for="calc-copies">Number of Copies</label>
+                    <input type="number" id="calc-copies" class="input-text" value="1" min="1">
+                  </div>
+                </div>
+
+                <div class="calc-form-group">
+                  <label class="calc-label">Print Orientation</label>
+                  <div class="option-grid-2col">
+                    <div class="option-button selected" data-input="calc-sides" data-value="single">
+                      <span class="option-button-title">Single Sided</span>
+                      <span class="option-button-sub">Simplex</span>
+                    </div>
+                    <div class="option-button" data-input="calc-sides" data-value="double">
+                      <span class="option-button-title">Double Sided</span>
+                      <span class="option-button-sub">Duplex</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="calc-form-group">
+                  <label class="calc-label">Color Mode</label>
+                  <div class="option-grid-2col">
+                    <div class="option-button selected" data-input="calc-color" data-value="bw">
+                      <span class="option-button-title">Black & White</span>
+                      <span class="option-button-sub">Greyscale</span>
+                    </div>
+                    <div class="option-button" data-input="calc-color" data-value="color">
+                      <span class="option-button-title">Color</span>
+                      <span class="option-button-sub">Full Color CMYK</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="calc-form-group">
+                  <label class="calc-label">Paper Size</label>
+                  <div class="option-grid">
+                    <div class="option-button selected" data-input="calc-size" data-value="a4">
+                      <span class="option-button-title">A4</span>
+                      <span class="option-button-sub">Standard</span>
+                    </div>
+                    <div class="option-button" data-input="calc-size" data-value="a3">
+                      <span class="option-button-title">A3</span>
+                      <span class="option-button-sub">Double Size</span>
+                    </div>
+                    <div class="option-button" data-input="calc-size" data-value="letter">
+                      <span class="option-button-title">Letter</span>
+                      <span class="option-button-sub">US Format</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="details-section-title" style="margin-top: 10px;">Custom Sheet Rate Adjustments ($)</div>
+                
+                <div class="option-grid">
+                  <div class="calc-form-group">
+                    <label class="field-label">A4 Sheet Rate</label>
+                    <input type="number" step="0.01" id="rate-a4" class="input-text" value="0.05">
+                  </div>
+                  <div class="calc-form-group">
+                    <label class="field-label">A3 Sheet Rate</label>
+                    <input type="number" step="0.01" id="rate-a3" class="input-text" value="0.15">
+                  </div>
+                  <div class="calc-form-group">
+                    <label class="field-label">Color Charge Add</label>
+                    <input type="number" step="0.01" id="rate-color-add" class="input-text" value="0.30">
+                  </div>
+                </div>
+              </form>
+            </div>
+
+            <div class="calculator-result-card">
+              <div class="result-header">
+                <h3 class="result-title">Cost Summary</h3>
+                <p class="result-subtitle">Live estimation breakdown</p>
+              </div>
+
+              <div class="breakdown-list">
+                <div class="breakdown-row">
+                  <span class="breakdown-lbl">Base Rate / Sheet</span>
+                  <span class="breakdown-val" id="calc-lbl-base-rate">$0.05</span>
+                </div>
+                <div class="breakdown-row">
+                  <span class="breakdown-lbl">Color Premium</span>
+                  <span class="breakdown-val" id="calc-lbl-color-rate">$0.00</span>
+                </div>
+                <div class="breakdown-row">
+                  <span class="breakdown-lbl">Duplex Option Factor</span>
+                  <span class="breakdown-val" id="calc-lbl-duplex-factor">1.0x (No discount)</span>
+                </div>
+                <div class="breakdown-row">
+                  <span class="breakdown-lbl">Calculated Sheets</span>
+                  <span class="breakdown-val" id="calc-lbl-sheets-count">10 Sheets</span>
+                </div>
+                <div class="breakdown-row">
+                  <span class="breakdown-lbl">Copies Multiplier</span>
+                  <span class="breakdown-val" id="calc-lbl-copies">x 1</span>
+                </div>
+
+                <div class="breakdown-row total">
+                  <span class="breakdown-lbl">Total Amount</span>
+                  <div class="large-total-display" id="calc-total-display">$0.50</div>
+                </div>
+              </div>
+
+              <button class="btn-primary" style="width: 100%; justify-content: center; height: 46px;" id="calc-generate-bill-btn">
+                <i data-lucide="receipt"></i>
+                <span style="font-size: 14px;">Generate Customer Bill</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="screen-view" id="screen-settings">
+          <div class="screen-header">
+            <div class="screen-title-area">
+              <h1 class="screen-title">Settings</h1>
+              <p class="screen-subtitle">Manage your store profile and account details</p>
+            </div>
+          </div>
+
+          <div class="calculator-card" style="max-width: 760px;">
+            <h3 class="settings-section-heading">Profile Settings</h3>
+            <p class="settings-section-desc">Update your store profile used across dashboard and print queue.</p>
+
+            <form id="settings-profile-form" class="calc-form" onsubmit="return false;" style="margin-top: 16px;">
+              <div class="option-grid-2col">
+                <div class="calc-form-group">
+                  <label class="field-label" for="settings-store-name">Store Name</label>
+                  <input type="text" id="settings-store-name" class="input-text" required>
+                </div>
+                <div class="calc-form-group">
+                  <label class="field-label" for="settings-phone-number">Phone Number</label>
+                  <input type="text" id="settings-phone-number" class="input-text" disabled>
+                </div>
+              </div>
+
+              <div class="option-grid-2col">
+                <div class="calc-form-group">
+                  <label class="field-label" for="settings-email">Email</label>
+                  <input type="email" id="settings-email" class="input-text">
+                </div>
+                <div class="calc-form-group">
+                  <label class="field-label" for="settings-cache-folder">Cache Folder</label>
+                  <input type="text" id="settings-cache-folder" class="input-text">
+                </div>
+              </div>
+
+              <div class="option-grid-2col">
+                <div class="calc-form-group">
+                  <label class="field-label" for="settings-district">District</label>
+                  <input type="text" id="settings-district" class="input-text">
+                </div>
+                <div class="calc-form-group">
+                  <label class="field-label" for="settings-state">State</label>
+                  <input type="text" id="settings-state" class="input-text">
+                </div>
+              </div>
+
+              <div class="calc-form-group">
+                <label class="field-label" for="settings-address">Address</label>
+                <input type="text" id="settings-address" class="input-text">
+              </div>
+
+              <div style="display: flex; justify-content: flex-end; margin-top: 18px;">
+                <button type="button" id="settings-save-btn" class="btn-primary" style="height: 42px;">
+                  <i data-lucide="save"></i>
+                  <span>Save Profile</span>
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <div class="screen-view" id="screen-help">
+          <div class="screen-header">
+            <div class="screen-title-area">
+              <h1 class="screen-title">Help & Documentation</h1>
+              <p class="screen-subtitle">PrintFlow operations manual and shortcuts</p>
+            </div>
+          </div>
+
+          <div class="calculator-card" style="display: flex; flex-direction: column; gap: 16px;">
+            <h3 style="font-family: var(--font-heading); font-size: 16px;">Keyboard Shortcuts</h3>
+            <div class="breakdown-list" style="max-width: 400px; margin-bottom: 0;">
+              <div class="breakdown-row"><span class="breakdown-lbl">New Order Dialog</span><span class="breakdown-val">Ctrl + N</span></div>
+              <div class="breakdown-row"><span class="breakdown-lbl">Search Focus</span><span class="breakdown-val">Ctrl + F</span></div>
+              <div class="breakdown-row"><span class="breakdown-lbl">Toggle Sidebar</span><span class="breakdown-val">Ctrl + B</span></div>
+              <div class="breakdown-row"><span class="breakdown-lbl">Refresh Table</span><span class="breakdown-val">F5</span></div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </main>
+
+    <div class="details-panel" id="details-panel">
+      <div class="details-header">
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <h3 class="details-title" id="detail-job-id">Job #PF-1082</h3>
+          <span class="status-badge pending" id="detail-status-badge">Pending</span>
+        </div>
+        <button class="details-close-btn" id="details-close-btn" title="Close Panel">
+          <i data-lucide="x"></i>
+        </button>
+      </div>
+
+      <div class="details-body">
+        <div class="details-body-wrapper">
+          
+          <div class="panel-left-config">
+            
+            <div class="details-section">
+              <span class="details-section-title">Customer Information</span>
+              <div class="grid-2col">
+                <div class="details-field">
+                  <span class="field-label">Customer Name</span>
+                  <span class="field-value" id="detail-customer-name">Siddharth Rao</span>
+                </div>
+                <div class="details-field">
+                  <span class="field-label">Customer Phone</span>
+                  <span class="field-value" id="detail-phone-number">+91 98765 43210</span>
+                </div>
+                <div class="details-field">
+                  <span class="field-label">Upload Time</span>
+                  <span class="field-value" id="detail-timestamp">12:31 PM</span>
+                </div>
+                <div class="details-field">
+                  <span class="field-label">Source Channel</span>
+                  <span class="field-value"><span class="source-badge whatsapp" id="detail-source">WhatsApp</span></span>
+                </div>
+              </div>
+            </div>
+
+            <div class="details-section">
+              <span class="details-section-title">Printer Selection</span>
+              <div style="display: flex; flex-direction: column; gap: 8px;">
+                <div style="display: flex; gap: 8px;">
+                  <select class="select-input" id="detail-printer-select" style="flex: 1; height: 38px;">
+                    </select>
+                  <button class="btn-secondary" id="detail-printer-refresh" style="height: 38px; width: 38px; padding: 0; justify-content: center;" title="Refresh Printers">
+                    <i data-lucide="refresh-cw" style="width: 16px; height: 16px;"></i>
+                  </button>
+                  <button class="btn-secondary" id="detail-printer-test" style="height: 38px; font-size: 12px;" title="Test Print Page">
+                    <span>Test Printer</span>
+                  </button>
+                </div>
+                
+                <div class="printer-status-info-box" id="detail-selected-printer-info">
+                  </div>
+              </div>
+            </div>
+
+            <div class="details-section">
+              <span class="details-section-title">Print Configuration</span>
+              <div class="grid-2col" style="gap: 12px;">
+                
+                <div class="calc-form-group">
+                  <label class="field-label">Copies</label>
+                  <input type="number" id="detail-config-copies" class="input-text" value="1" min="1" style="height: 36px;">
+                </div>
+                
+                <div class="calc-form-group">
+                  <label class="field-label">Color Mode</label>
+                  <select class="select-input" id="detail-config-color" style="height: 36px;">
+                    <option value="bw">Black & White</option>
+                    <option value="color">Color</option>
+                  </select>
+                </div>
+
+                <div class="calc-form-group">
+                  <label class="field-label">Duplex Printing</label>
+                  <select class="select-input" id="detail-config-duplex" style="height: 36px;">
+                    <option value="single">Single-Sided</option>
+                    <option value="double">Double-Sided</option>
+                  </select>
+                </div>
+
+                <div class="calc-form-group">
+                  <label class="field-label">Page Selection</label>
+                  <select class="select-input" id="detail-config-pageselect" style="height: 36px;">
+                    <option value="all">All Pages</option>
+                    <option value="custom">Custom Range</option>
+                  </select>
+                </div>
+
+                <div class="calc-form-group span-2col" id="detail-custom-pages-group" style="display: none;">
+                  <label class="field-label">Custom Range (e.g. 1-5 or 1,3,5)</label>
+                  <input type="text" id="detail-config-pagerange" class="input-text" placeholder="e.g. 1-5" style="height: 36px;">
+                </div>
+
+                <div class="calc-form-group">
+                  <label class="field-label">Paper Size</label>
+                  <select class="select-input" id="detail-config-size" style="height: 36px;">
+                    <option value="a4">A4</option>
+                    <option value="a3">A3</option>
+                    <option value="letter">Letter</option>
+                    <option value="legal">Legal</option>
+                  </select>
+                </div>
+
+                <div class="calc-form-group">
+                  <label class="field-label">Orientation</label>
+                  <select class="select-input" id="detail-config-orientation" style="height: 36px;">
+                    <option value="portrait">Portrait</option>
+                    <option value="landscape">Landscape</option>
+                  </select>
+                </div>
+
+                <div class="calc-form-group">
+                  <label class="field-label">Quality</label>
+                  <select class="select-input" id="detail-config-quality" style="height: 36px;">
+                    <option value="draft">Draft</option>
+                    <option value="standard" selected>Standard</option>
+                    <option value="high">High</option>
+                  </select>
+                </div>
+
+                <div class="calc-form-group">
+                  <label class="field-label">Pages Per Sheet</label>
+                  <select class="select-input" id="detail-config-pages-per-sheet" style="height: 36px;">
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="4">4</option>
+                    <option value="8">8</option>
+                  </select>
+                </div>
+
+                <div class="calc-form-group span-2col">
+                  <label class="field-label">Scaling</label>
+                  <div style="display: flex; gap: 8px;">
+                    <select class="select-input" id="detail-config-scale-type" style="flex: 1; height: 36px;">
+                      <option value="fit">Fit to Page</option>
+                      <option value="actual">Actual Size</option>
+                      <option value="custom">Custom %</option>
+                    </select>
+                    <input type="number" id="detail-config-scale-pct" class="input-text" value="100" min="10" max="400" style="width: 70px; height: 36px; display: none;">
+                  </div>
+                </div>
+
+              </div>
+            </div>
+
+            <div class="details-section">
+              <span class="details-section-title">Cost Calculation</span>
+              <div class="breakdown-list" style="margin-bottom: 0; font-size: 12px; gap: 8px;">
+                <div class="breakdown-row">
+                  <span class="breakdown-lbl">B&W Pages Cost</span>
+                  <span class="breakdown-val" id="detail-cost-bw">$0.00</span>
+                </div>
+                <div class="breakdown-row">
+                  <span class="breakdown-lbl">Color Pages Cost</span>
+                  <span class="breakdown-val" id="detail-cost-color">$0.00</span>
+                </div>
+                <div class="breakdown-row">
+                  <span class="breakdown-lbl">Additional Charges</span>
+                  <span class="breakdown-val" id="detail-cost-extra">$0.00</span>
+                </div>
+                <div class="breakdown-row">
+                  <span class="breakdown-lbl">GST (18%)</span>
+                  <span class="breakdown-val" id="detail-cost-gst">$0.00</span>
+                </div>
+                <div class="breakdown-row total" style="padding-top: 10px; margin-top: 2px;">
+                  <span class="breakdown-lbl" style="font-size: 13px;">Final Total</span>
+                  <span class="breakdown-val" id="detail-cost-total" style="font-size: 18px; color: var(--accent);">$0.00</span>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          <div class="panel-right-preview">
+            
+            <div class="details-section">
+              <span class="details-section-title">Document Information</span>
+              <div class="details-file-item" style="margin-bottom: 6px;">
+                <div class="file-info-inline">
+                  <i data-lucide="file-text" id="detail-doc-icon"></i>
+                  <span class="file-name-inline" id="detail-doc-name" style="max-width: 190px;">proposal.pdf</span>
+                </div>
+                <span class="file-pages-badge" id="detail-doc-meta">PDF (4.2 MB)</span>
+              </div>
+              
+              <div style="display: flex; gap: 8px;">
+                <button class="btn-secondary" id="detail-action-download" style="flex: 1; padding: 6px 12px; font-size: 12px; height: 32px;">
+                  <i data-lucide="download" style="width: 14px; height: 14px;"></i>
+                  <span>Download Document</span>
+                </button>
+                <button class="btn-secondary" id="detail-action-save-settings" style="flex: 1; padding: 6px 12px; font-size: 12px; height: 32px;" title="Save print parameters to job">
+                  <i data-lucide="save" style="width: 14px; height: 14px;"></i>
+                  <span>Save Settings</span>
+                </button>
+              </div>
+            </div>
+
+            <div class="details-section">
+              <span class="details-section-title">Print Preview</span>
+              <div class="mini-preview-viewport">
+                
+                <div class="mini-preview-content" id="detail-preview-canvas">
+                  </div>
+                
+                <div class="mini-preview-toolbar">
+                  <div style="display: flex; gap: 4px;">
+                    <button class="btn-icon-sm" id="detail-preview-zoom-out" style="width: 24px; height: 24px;"><i data-lucide="zoom-out"></i></button>
+                    <button class="btn-icon-sm" id="detail-preview-zoom-in" style="width: 24px; height: 24px;"><i data-lucide="zoom-in"></i></button>
+                  </div>
+                  
+                  <span class="mini-preview-page-text" id="detail-preview-page-indicator">Page 1 of 12</span>
+                  
+                  <div style="display: flex; gap: 4px;">
+                    <button class="btn-icon-sm" id="detail-preview-prev-page" style="width: 24px; height: 24px;"><i data-lucide="chevron-left"></i></button>
+                    <button class="btn-icon-sm" id="detail-preview-next-page" style="width: 24px; height: 24px;"><i data-lucide="chevron-right"></i></button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="details-section">
+              <span class="details-section-title">Spooler & Device Status</span>
+              <div class="spooler-status-box">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 6px; font-size: 11px;">
+                  <span style="color: var(--text-secondary);">Active Print Spooler:</span>
+                  <span id="detail-spool-printer-name" style="font-weight: 600;">HP LaserJet Pro</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 11px;">
+                  <span style="color: var(--text-secondary);">Spooling Progress:</span>
+                  <span id="detail-spool-progress-label" style="font-weight: 600; color: var(--accent);">Ready</span>
+                </div>
+                <div class="status-bar-bg" style="height: 4px;">
+                  <div class="status-bar-fill normal" id="detail-spool-progress-bar" style="width: 0%; background-color: var(--accent);"></div>
+                </div>
+                
+                <div class="spooler-warning-banner" id="detail-spool-warning" style="display: none;">
+                  </div>
+              </div>
+            </div>
+
+            <div class="details-section">
+              <span class="details-section-title">Operator Actions</span>
+              <div class="actions-grid-2x4">
+                <button class="btn-primary" id="detail-action-print-now" style="height: 38px; justify-content: center; box-shadow: none;">
+                  <i data-lucide="printer"></i>
+                  <span>Print Document</span>
+                </button>
+                <button class="btn-secondary" id="detail-action-preview-main" style="height: 38px; justify-content: center; border-color: var(--accent); color: var(--accent); background: rgba(59, 130, 246, 0.05);">
+                  <i data-lucide="eye"></i>
+                  <span>Preview in Viewer</span>
+                </button>
+                
+                <button class="btn-action" id="detail-action-pause" style="padding: 6px; font-size: 11px; justify-content: center; height: 32px;">
+                  <i data-lucide="pause" style="width: 14px; height: 14px;"></i>
+                  <span>Pause Job</span>
+                </button>
+                <button class="btn-action" id="detail-action-resume" style="padding: 6px; font-size: 11px; justify-content: center; height: 32px; display: none;">
+                  <i data-lucide="play" style="width: 14px; height: 14px;"></i>
+                  <span>Resume</span>
+                </button>
+                <button class="btn-action" id="detail-action-cancel" style="padding: 6px; font-size: 11px; justify-content: center; height: 32px; color: var(--danger); border-color: rgba(239, 68, 68, 0.2);">
+                  <i data-lucide="slash" style="width: 14px; height: 14px;"></i>
+                  <span>Cancel Job</span>
+                </button>
+                
+                <button class="btn-action" id="detail-action-complete" style="padding: 6px; font-size: 11px; justify-content: center; height: 32px; color: var(--success); border-color: rgba(16, 185, 129, 0.2);">
+                  <i data-lucide="check" style="width: 14px; height: 14px;"></i>
+                  <span>Complete</span>
+                </button>
+                <button class="btn-action" id="detail-action-reprint" style="padding: 6px; font-size: 11px; justify-content: center; height: 32px;">
+                  <i data-lucide="rotate-ccw" style="width: 14px; height: 14px;"></i>
+                  <span>Reprint</span>
+                </button>
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-overlay" id="modal-new-order">
+      <div class="modal-card">
+        <div class="modal-header">
+          <h3 class="modal-title">Create New Order</h3>
+          <button class="modal-close-btn" id="modal-new-order-close" title="Close Dialog">
+            <i data-lucide="x"></i>
+          </button>
+        </div>
+
+        <div class="modal-body">
+          <div class="calc-form-group">
+            <label class="calc-label" for="new-order-customer">Customer Name</label>
+            <input type="text" id="new-order-customer" class="input-text" placeholder="e.g. John Doe">
+          </div>
+
+          <div class="calc-form-group">
+            <label class="calc-label" for="new-order-phone">Phone Number</label>
+            <input type="text" id="new-order-phone" class="input-text" placeholder="e.g. +1 555 0192">
+          </div>
+
+          <div class="option-grid-2col">
+            <div class="calc-form-group">
+              <label class="calc-label" for="new-order-pages">Total Pages</label>
+              <input type="number" id="new-order-pages" class="input-text" value="1" min="1">
+            </div>
+            <div class="calc-form-group">
+              <label class="calc-label" for="new-order-copies">Copies</label>
+              <input type="number" id="new-order-copies" class="input-text" value="1" min="1">
+            </div>
+          </div>
+
+          <div class="calc-form-group">
+            <label class="calc-label">Print Format Options</label>
+            <div class="option-grid">
+              <select class="select-input" id="new-order-size" style="min-width: unset;">
+                <option value="a4">A4 Size</option>
+                <option value="a3">A3 Size</option>
+                <option value="letter">Letter Size</option>
+              </select>
+              <select class="select-input" id="new-order-sides" style="min-width: unset;">
+                <option value="single">Single Side</option>
+                <option value="double">Double Side</option>
+              </select>
+              <select class="select-input" id="new-order-color" style="min-width: unset;">
+                <option value="bw">B&W</option>
+                <option value="color">Color</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="calc-form-group">
+            <label class="calc-label">Attach File Submissions</label>
+            <div class="details-file-item" style="border-style: dashed; justify-content: center; cursor: pointer; padding: 16px;">
+              <div class="file-info-inline">
+                <i data-lucide="upload-cloud"></i>
+                <span class="file-name-inline" style="max-width: unset; color: var(--text-secondary);">Browse files or drop them here...</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button class="btn-secondary" id="new-order-cancel-btn">Cancel</button>
+          <button class="btn-primary" id="new-order-submit-btn">Create & Queue Job</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script src="app.js"></script>
+</body>
+</html>
